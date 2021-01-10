@@ -1,7 +1,8 @@
 const express = require('express')
-const user = require('../controllers/boss')
+const boss = require('../controllers/boss')
 
 const router = express.Router()
-router.get('/', user.getProfile)
+router.get('/', boss.getProfile)
+router.post('/create', boss.createJob)
 
 module.exports = router
