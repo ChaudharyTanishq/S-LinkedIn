@@ -1,3 +1,5 @@
+// const JobDesc = require('../models/JobDesc')
+
 const getProfile = async (req, res) => {
     res.send('user profile')
 }

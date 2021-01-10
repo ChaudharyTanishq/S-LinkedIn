@@ -11,11 +11,11 @@ app.use(cors())
 
 // adding user and boss routers
 const userRouter = require('./routes/user')
-// const bossRouter = require('./routes/boss')
+const bossRouter = require('./routes/boss')
 
 // specifying what routes they will take
 app.use('/user', userRouter)
-// app.use('/boss', bossRouter)
+app.use('/boss', bossRouter)
 
 
 // database
