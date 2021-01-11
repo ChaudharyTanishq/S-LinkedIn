@@ -1,0 +1,15 @@
+{
+    "name": "fakeman",
+    "email": "fakeman@gmail.com",
+    "password": "bruh"
+}
+
+{
+    "name": "smartboi",
+    "email": "smartboi@gmail.com",
+    "education": [{
+        "instituteName": "haha",
+        "yearStart": "2016-04-01T11:28:41.418+00:00"
+    }],
+    "password": "brrr"
+}
