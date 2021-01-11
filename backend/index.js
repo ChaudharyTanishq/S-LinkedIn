@@ -9,14 +9,15 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-// adding user and boss routers
+// adding user, boss and auth routers
 const userRouter = require('./routes/user')
 const bossRouter = require('./routes/boss')
+const authRouter = require('./routes/auth')
 
 // specifying what routes they will take
+app.use('', authRouter)
 app.use('/user', userRouter)
 app.use('/boss', bossRouter)
-
 
 // database
 mongoose.connect(
