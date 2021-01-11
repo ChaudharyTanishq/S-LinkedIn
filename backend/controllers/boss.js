@@ -6,7 +6,7 @@ const getProfile = async (req, res) => {
 
 const createJob = async (req, res) => {
     const newJob = new JobDesc({
-        title:  req.body.title,
+        title: req.body.title,
         recruiterName: req.body.recruiterName,
         recruiterEmail: req.body.recruiterEmail,
         recruiterScoreCurr: req.body.recruiterScoreCurr,
