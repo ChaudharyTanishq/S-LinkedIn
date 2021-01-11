@@ -1,15 +1,29 @@
 {
-    "name": "fakeman",
-    "email": "fakeman@gmail.com",
-    "password": "bruh"
-}
+    "fake1": {
+        "name": "boss",
+        "email": "boss@gmail.com",
+        "password": "thebigboss",
+        "isBoss": true
+    },
 
-{
-    "name": "smartboi",
-    "email": "smartboi@gmail.com",
-    "education": [{
-        "instituteName": "haha",
-        "yearStart": "2016-04-01T11:28:41.418+00:00"
-    }],
-    "password": "brrr"
+    "fake2": {
+        "name": "smartboi",
+        "email": "smartboi@gmail.com",
+        "education": [{
+            "instituteName": "haha",
+            "yearStart": "2016-04-01T11:28:41.418+00:00"
+        }],
+        "password": "brrr"
+    },
+
+    "fake3": {
+        "name": "fakeman",
+        "email": "fakeman@gmail.com",
+        "password": "bruh"
+    },
+
+    "fake4": {
+        "email": "boss@gmail.com",
+        "password": "thebigboss"
+    }
 }
