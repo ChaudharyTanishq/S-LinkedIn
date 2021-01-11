@@ -21,7 +21,7 @@ app.use('/boss', bossRouter)
 
 // database
 mongoose.connect(
-    'mongodb+srv://admin:admin@cluster0.x9hsu.mongodb.net/JobDesc?retryWrites=true&w=majority',
+    'mongodb+srv://admin:admin@cluster0.x9hsu.mongodb.net/myDatabase?retryWrites=true&w=majority',
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => { console.log('database connected successfully!')}
 )

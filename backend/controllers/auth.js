@@ -1,4 +1,5 @@
 const People = require('../models/People')
+const jwt = require('jsonwebtoken')
 const { signupValidate, signinValidate } = require('./validate')
 
 const postSignup = async (req, res) => {
@@ -15,7 +16,8 @@ const postSignup = async (req, res) => {
     const newPerson = new People({
         name: req.body.name,
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        isBoss: req.body.isBoss
     })
 
 
@@ -34,6 +36,7 @@ const postSignin = async (req, res) => {
     if (error)
         return res.status(400).send(error.details[0].message)
 
+    
     // checking if a person doesn't already exists
     const person = await People.findOne({email: req.body.email})
     if (!person){
@@ -42,7 +45,11 @@ const postSignin = async (req, res) => {
         return res.status(401).send("password is wrong!")
     }
 
-    return res.status(200).send("success!")
+
+    // create and assign token
+    const token = jwt.sign({_id: person._id}, "TOKEN_SECRET")
+
+    return res.status(200).header("auth-token", token).send("success!")
 }
 
 module.exports = { postSignup, postSignin }
