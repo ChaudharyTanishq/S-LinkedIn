@@ -25,5 +25,12 @@
     "fake4": {
         "email": "boss@gmail.com",
         "password": "thebigboss"
+    },
+
+    "fake5": {
+        "name": "tani",
+        "email": "tani@gmail.com",
+        "password": "legendarytani",
+        "isBoss": false
     }
 }

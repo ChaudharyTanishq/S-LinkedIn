@@ -1,0 +1,15 @@
+{
+    "fake1": {
+        "appliedApplications": [],
+        "shortListedApplications": [],
+        "acceptedApplications": [],
+        "rejectedApplications": []
+    },
+
+    "fake2": {
+        "appliedApplications": ["5ffd817651b37a0eaf2a6112"],
+        "shortListedApplications": [],
+        "acceptedApplications": ["5ffd84b766e8591324589a2f"],
+        "rejectedApplications": []
+    }
+}
