@@ -15,7 +15,11 @@ const jobSchema = mongoose.Schema({
     requiredSkillSet: [{ type: String }],
     jobType: { type:String, required: true },
     duration: { type: Number, min: 0, max: 6, required: true },
-    salary: { type: Number, min: 0, required: true }
+    salary: { type: Number, min: 0, required: true },
+    appliedApplications: [{type: Object, required: false}],
+    shortListedApplications: [{type: Object, required: false}],
+    acceptedApplications: [{type: Object, required: false}],
+    rejectedApplications: [{type: Object, required: false}]
 })
 
 module.exports = mongoose.model('JobDesc', jobSchema)

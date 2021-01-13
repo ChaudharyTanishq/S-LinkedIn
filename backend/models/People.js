@@ -1,6 +1,6 @@
 const { bool } = require('joi')
 const mongoose = require('mongoose')
-const JobDesc = require('./JobDesc')
+// const JobDesc = require('./JobDesc')
 
 const educationSchema = mongoose.Schema({
     instituteName: { type: String, required: true},
@@ -20,9 +20,13 @@ const peopleSchema = mongoose.Schema({
     
     contact: { type: String, required: false}, 
     education: [{ type: educationSchema, required: false }],
-    skills: [{ type: String, required: false }], 
-    // validApplications: [{ type: JobDesc.ObjectIds, required: false }],
-    // invalidApplications: [{ type: JobDesc.ObjectId, required: false }]
+    skills: [{ type: String, required: false }],
+    
+    appliedApplications: [{type: Object, required: false}],
+    shortListedApplications: [{type: Object, required: false}],
+    acceptedApplications: [{type: Object, required: false}],
+    rejectedApplications: [{type: Object, required: false}]
+
 })
 
 module.exports = mongoose.model('People', peopleSchema)
