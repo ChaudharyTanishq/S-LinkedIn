@@ -4,7 +4,7 @@
   "description": "dass-ass1 backend",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "clear; nodemon index.js"
   },
   "author": "Tanishq Chaudhary",
   "license": "GPL-3.0",
