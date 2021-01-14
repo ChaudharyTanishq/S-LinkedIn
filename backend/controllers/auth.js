@@ -48,8 +48,7 @@ const postSignin = async (req, res) => {
 
     // create and assign token
     const token = jwt.sign({_id: person._id}, "TOKEN_SECRET")
-
-    return res.status(200).header("auth-token", token).send("success!")
+    return res.status(200).json({token: token}).send("success!")
 }
 
 module.exports = { postSignup, postSignin }

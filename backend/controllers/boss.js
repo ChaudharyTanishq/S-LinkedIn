@@ -1,7 +1,6 @@
 const JobDesc = require('../models/JobDesc')
 const jwt = require('jsonwebtoken')
 const People = require('../models/People')
-const { json } = require('express')
 
 // COMPLETE IT
 const getProfile = async (req, res) => {
