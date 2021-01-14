@@ -1,9 +1,9 @@
 const express = require('express')
 const boss = require('../controllers/boss')
-const { bossAuth, userAuth } = require('../controllers/verifyToken')
+const { bossAuth, userAuth, getWho } = require('../controllers/verifyToken')
 
 const router = express.Router()
-router.get('/', boss.getProfile)
+router.get('/profile', boss.getProfile)
 router.get('/myJobs', boss.getMyJobs)
 router.post('/create', boss.createJob)
 router.get('/:jobId', boss.showJob)
