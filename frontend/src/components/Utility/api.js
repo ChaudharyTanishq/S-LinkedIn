@@ -13,9 +13,10 @@ export const generateApi = (authToken) => {
 }
 
 
-export const useApiGet = (api, url) => {
+export const useApiGet = (api, url, dependencies=[]) => {
     const [isLoading, setIsLoading] = useState(false)
     const [data, setData] = useState(null)
+    const [errorData, setErrorData] = useState("")
 
     // getting the data from the url provided
     // equivalent to component did mount
@@ -29,7 +30,11 @@ export const useApiGet = (api, url) => {
                 setIsLoading(false)
                 setData(result.data)
             } catch (error) {
-                console.log(error)
+                try {
+                    setErrorData(error.response.data)
+                } catch (error) {
+                    setErrorData(error)
+                }
     
                 // setting the state
                 setIsLoading(false)
@@ -37,8 +42,8 @@ export const useApiGet = (api, url) => {
         }
 
         getData()
-    }, [])
+    }, dependencies)
 
     // return the needed data
-    return [isLoading, data]
+    return [isLoading, data, errorData]
 }

@@ -1,22 +1,27 @@
-// const [isLoading, data] = useApiGet('/user')
-	
-// let content 
-// if (isLoading) content = 'loading ...'
-// else if (!data) content = 'error fetching data'
-// else {
-//     content = 'work in progress'
-//     for (let i in data){
-//         console.log(data[i])
-//         console.log("=================================")
-//     }
-// }
-
-import React from 'react' 
+import React, { useContext } from 'react' 
+import { generateApi, useApiGet } from '../Utility/api';
+import { UserContext } from '../Utility/userContext';
+import { Job } from './job';
 
 function Dashboard(props) {
+	const {authToken} = useContext(UserContext)
+	const api = generateApi(authToken)
+	const [isLoading, data, errorData] = useApiGet(api, '/user/dashboard', [])
+
+	// // the only case we bother about
+	let content = []
+	if(!isLoading && data){
+		for (let i = 0; i < data.length; i++) {
+			const element = data[i];
+			content.push(<Job data={element} key={element._id}/>)
+		}
+	}
+	
 	return (
 		<div className="Dashboard">
 			<h1>Dashboard</h1>
+			{content}
+			{errorData !== ""? errorData: ""}
 		</div>
 	)
 }
