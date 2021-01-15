@@ -34,11 +34,22 @@ const applyJob = async (req, res) => {
     req.user = jwt.verify(token, "TOKEN_SECRET")
     const person = await People.findOne({_id: req.user._id})
     
+    // console.log('IMPORTANT  REQUEST CHECK KEYS', req.body.SOP)
+
     //adding a new job request
     try {
         const job = await JobDesc.findById(req.params.jobId)
-        job.appliedApplications.push(person._id)
+        // if(!job.appliedApplications.includes(JSON.stringify(person))) 
+            job.appliedApplications.push({personId: person._id, personName: person.name, SOP: req.body.SOP})
+        // if(!person.appliedApplications.includes(JSON.stringify(job))) 
+            person.appliedApplications.push({jobId: job._id, jobTitle: job.title})
+        
+        // console.log('PERSON ID', person._id)
+        // console.log('JOB ID', req.params.jobId)
         job.save()
+        person.save()
+        // console.log(job.appliedApplications)
+        // console.log(person.appliedApplications)
         res.json(job)
     } catch(error) {
         res.status(502).send({message: error})
@@ -50,11 +61,12 @@ const getApplications = async (req, res) => {
     // getting the token
     const token = req.header('auth-token')    
     req.user = jwt.verify(token, "TOKEN_SECRET")
+    const person = await People.findOne({_id: req.user._id})
     
-    // going through all the jobs, and filling in the lists
+    // going through all the person's jobs list,
+    // and filling in
     try {
-        const person = await People.findOne({_id: req.user._id})
-        res.send([
+        res.status(200).send([
             person.appliedApplications,
             person.shortListedApplications,
             person.acceptedApplications,

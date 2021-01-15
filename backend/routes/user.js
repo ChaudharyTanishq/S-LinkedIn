@@ -7,7 +7,7 @@ const router = express.Router()
 router.get('/dashboard', user.getDashboard)
 router.get('/profile', user.getProfile)
 router.get('/applications', user.getApplications)
-router.get('/:jobId', user.showJob)
-router.post('/:jobId', user.applyJob)
+router.get('/dashboard/:jobId', user.showJob)
+router.post('/dashboard/:jobId', user.applyJob)
 
 module.exports = router
