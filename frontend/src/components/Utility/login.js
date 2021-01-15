@@ -1,24 +1,29 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Redirect } from "react-router-dom";
 import { generateApi } from "./api";
+import { UserContext } from "./userContext";
 
 function Login(props) {
   const { register, handleSubmit, errors } = useForm();
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [errorData, setErrorData] = useState("")
+  const {setauthToken} = useContext(UserContext)
+
   const onSubmit = async (data) => {
     const api = generateApi()
-    console.log("data:", data)
     try {
         const results = await api.post("/default/signin", data)
-        console.log("results:", results)
-        localStorage.setItem('person', results.data.token)
-    } catch (error) {
-        console.log(error)
-    }
+        setauthToken(results.data.token)
+        setIsLoggedIn(true)
+      } catch (error) {
+        setErrorData(error.response.data)
+      }
   }
 
   return (
     <div className="Login">
+      {isLoggedIn && <Redirect to="/default"/>}
       <h1>Login</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
@@ -37,6 +42,7 @@ function Login(props) {
         {errors.password && "password must be in between 8 and 128 letters"}
         <input type="submit" value="submit" />
       </form>
+      {errorData !== ""? errorData: ""}
     </div>
   );
 }
