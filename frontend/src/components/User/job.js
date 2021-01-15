@@ -7,14 +7,14 @@ export function Job(props) {
   // preparing job data
   const data = props.data;
   let skills = [];
-  for (let i = 0; i < data.requiredSkillSet.length; i++) {
-    const element = data.requiredSkillSet[i];
+  for (let i = 0; i < data.length; i++) {
+    const element = data[i];
     skills.push(<li key={i}>{element}</li>);
   }
 
   return (
     <div className="Job">
-      <Link to={data._id} data={data}><h3>{data.title}</h3></Link>
+      <Link to={'/user/dashboard/'+data._id} data={data}><h3>{data.title}</h3></Link>
       <p>
         by: {data.recruiterName} at {data.recruiterEmail}
       </p>

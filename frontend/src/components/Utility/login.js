@@ -8,7 +8,7 @@ function Login(props) {
   const { register, handleSubmit, errors } = useForm();
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [errorData, setErrorData] = useState("")
-  const {setauthToken} = useContext(UserContext)
+  const {authToken, setauthToken} = useContext(UserContext)
 
   const onSubmit = async (data) => {
     const api = generateApi()
@@ -16,6 +16,7 @@ function Login(props) {
         const results = await api.post("/default/signin", data)
         setauthToken(results.data.token)
         setIsLoggedIn(true)
+        localStorage.setItem('person', results.data.token)
       } catch (error) {
         setErrorData(error.response.data)
       }

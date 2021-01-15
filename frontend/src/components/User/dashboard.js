@@ -8,7 +8,7 @@ function Dashboard(props) {
 	const api = generateApi(authToken)
 	const [isLoading, data, errorData] = useApiGet(api, '/user/dashboard', [])
 
-	// // the only case we bother about
+	// the only case we bother about
 	let content = []
 	if(!isLoading && data){
 		for (let i = 0; i < data.length; i++) {
