@@ -9,16 +9,16 @@ function Applications(props) {
     const [isLoading, data, errorData] = useApiGet(api, '/user/applications', [])
 
     const expandArray = (a)=>{
-      let temp = []
+      let applications = []
       for (let i = 0; i < a.length; i++) {
         const element = a[i];
         // console.log(element)
-        temp.push(<li><Link to={'/user/dashboard/'+element.jobId}>{element.jobTitle}</Link></li>)
+        applications.push(<li><Link to={'/user/dashboard/'+element.jobId}>{element.jobTitle}</Link></li>)
       }
 
       return (
         <ul>
-          {temp}
+          {applications}
         </ul>
       )
     }
