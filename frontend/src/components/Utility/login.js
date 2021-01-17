@@ -16,7 +16,7 @@ function Login(props) {
         const results = await api.post("/default/signin", data)
         setauthToken(results.data.token)
         setIsLoggedIn(true)
-        localStorage.setItem('person', results.data.token)
+        // localStorage.setItem('person', results.data.token)
       } catch (error) {
         setErrorData(error.response.data)
       }
