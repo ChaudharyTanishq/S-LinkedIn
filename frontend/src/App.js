@@ -11,7 +11,6 @@ import Dashboard from "./components/User/dashboard";
 import { JobDetails } from "./components/User/jobDetails";
 import Logout from "./components/Utility/logout";
 import { UserContext } from "./components/Utility/userContext";
-import Profile from "./components/User/profile";
 import Applications from "./components/User/applications";
 import MyJobs from "./components/Boss/myJobs";
 import BossJobDetails from "./components/Boss/jobDetails";
@@ -19,6 +18,8 @@ import ApplicationDetails from "./components/Boss/jobApplicationDetails";
 import CreateJob from "./components/Boss/jobCreate";
 import Register from "./components/Utility/register";
 import AcceptedUsers from "./components/Boss/acceptedUsers";
+import BossProfile from "./components/Boss/boss";
+import UserProfile from "./components/User/profile";
 
 function App() {
   const person = {
@@ -67,11 +68,12 @@ function App() {
             <Route path="/default/logout" exact component={Logout} />
             <Route path="/default/register" exact component={Register} />
             <Route path="/user" exact component={User} />
-            <Route path="/user/profile" exact component={Profile}/>
+            <Route path="/user/profile" exact component={UserProfile}/>
             <Route path="/user/applications" exact component={Applications}/>
             <Route path="/user/dashboard" exact component={Dashboard} />
             <Route path="/user/dashboard/:jobId" exact component={JobDetails} />
             <Route path="/boss" exact component={Boss} />
+            <Route path="/boss/profile" component={BossProfile}/>
             <Route path="/boss/accepted" component={AcceptedUsers}/>
             <Route path="/boss/create" component={CreateJob}/>
             <Route path="/boss/myJobs" exact component={MyJobs} />
