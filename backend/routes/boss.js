@@ -4,6 +4,7 @@ const { bossAuth, userAuth, getWho } = require('../controllers/verifyToken')
 
 const router = express.Router()
 router.get('/profile', boss.getProfile)
+router.patch('/profile', boss.updateProfile)
 router.get('/myJobs', boss.getMyJobs)
 router.post('/create', boss.createJob)
 router.get('/myJobs/:jobId', boss.showJob)

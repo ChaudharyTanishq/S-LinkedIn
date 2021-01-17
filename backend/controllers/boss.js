@@ -2,9 +2,15 @@ const JobDesc = require('../models/JobDesc')
 const jwt = require('jsonwebtoken')
 const People = require('../models/People')
 
-// COMPLETE IT
 const getProfile = async (req, res) => {
-    res.send('boss profile')
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        const person = await People.findOne({_id: req.user._id})
+        res.json(person)
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
 }
 
 
@@ -326,6 +332,26 @@ const updateApplicationsJob = async (req, res) => {
     }    
 }
 
+const updateProfile = async (req, res) => {
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        const person = await People.findById({_id: req.user._id})
+
+        // updating each field
+        person.email = req.body.email
+        person.name = req.body.name
+        person.contact = req.body.contact
+        person.password = req.body.password
+        person.bio = req.body.bio
+
+        person.save()
+        res.json(person)
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
+}
+
 module.exports = {
     getProfile,
     createJob,
@@ -333,5 +359,6 @@ module.exports = {
     updateJob,
     showJob,
     getMyJobs,
-    updateApplicationsJob
+    updateApplicationsJob,
+    updateProfile
 }
