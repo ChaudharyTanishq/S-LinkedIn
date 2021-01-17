@@ -14,7 +14,7 @@ export function Job(props) {
 
   return (
     <div className="Job">
-      <Link to={'/user/dashboard/'+data._id} data={data}><h3>{data.title}</h3></Link>
+      <Link to={props.boss? '/boss/myJobs/'+data._id:'/user/dashboard/'+data._id} data={data}><h3>{data.title}</h3></Link>
       <p>
         by: {data.recruiterName} at {data.recruiterEmail}
       </p>
