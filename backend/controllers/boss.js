@@ -352,6 +352,44 @@ const updateProfile = async (req, res) => {
     }
 }
 
+const getAccepted = async (req, res) => {
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        // here the person is the boss, 
+        // whoose application list we are going to read out
+        const person = await People.findOne({_id: req.user._id})
+        
+        // lists out all the jobs
+        let jobs = await JobDesc.find()
+        jobs = jobs.filter((job)=>{
+            // console.log('one job email:', job.recruiterEmail)
+            return job.recruiterEmail == person.email
+        })
+
+        
+        console.log('person email:', person.email)
+        console.log('shortlisted jobs:', jobs)
+
+        let acceptedUsers = []
+        for (let i = 0; i < jobs.length; i++) {
+            const job = jobs[i];
+            for (let j = 0; j < job.acceptedApplications.length; j++) {
+                let element = job.acceptedApplications[j];
+                element.jobType = job.jobType
+                element.jobTitle = job.title
+                acceptedUsers.push(element)
+            }
+        }
+
+        console.log(acceptedUsers)
+
+        res.json(acceptedUsers)
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
+}
+
 module.exports = {
     getProfile,
     createJob,
@@ -360,5 +398,6 @@ module.exports = {
     showJob,
     getMyJobs,
     updateApplicationsJob,
-    updateProfile
+    updateProfile,
+    getAccepted
 }
