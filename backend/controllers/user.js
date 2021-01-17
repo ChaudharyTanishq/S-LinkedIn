@@ -40,7 +40,15 @@ const applyJob = async (req, res) => {
     try {
         const job = await JobDesc.findById(req.params.jobId)
         // if(!job.appliedApplications.includes(JSON.stringify(person))) 
-            job.appliedApplications.push({personId: person._id, personName: person.name, SOP: req.body.SOP})
+            job.appliedApplications.push({
+                personId: person._id,
+                name: person.name,
+                SOP: req.body.SOP,
+                rating: person.rating,
+                date: new Date(),
+                resume: person.resume,
+                skills: person.skills
+            })
         // if(!person.appliedApplications.includes(JSON.stringify(job))) 
             person.appliedApplications.push({jobId: job._id, jobTitle: job.title})
         
