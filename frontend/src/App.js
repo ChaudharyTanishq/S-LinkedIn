@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { generateApi, useApiGet } from "./components/Utility/api";
 
@@ -13,14 +13,21 @@ import Logout from "./components/Utility/logout";
 import { UserContext } from "./components/Utility/userContext";
 import Profile from "./components/User/profile";
 import Applications from "./components/User/applications";
+import MyJobs from "./components/Boss/myJobs";
+import BossJobDetails from "./components/Boss/jobDetails";
+import ApplicationDetails from "./components/Boss/jobApplicationDetails";
+import CreateJob from "./components/Boss/jobCreate";
+import Register from "./components/Utility/register";
+import AcceptedUsers from "./components/Boss/acceptedUsers";
 
-function App(props) {
+function App() {
   const person = {
     default: ["login", "register"],
     user: ["dashboard", "profile", "applications"],
     boss: ["create", "myJobs", "accepted"],
   };
   
+  // NOTE WORKING
   // useEffect(()=>{
   //   const token = localStorage.getItem('person')
   //   setauthToken(token)
@@ -58,15 +65,18 @@ function App(props) {
             <Route path="/default" exact component={Home} />
             <Route path="/default/login" exact component={Login} />
             <Route path="/default/logout" exact component={Logout} />
+            <Route path="/default/register" exact component={Register} />
             <Route path="/user" exact component={User} />
             <Route path="/user/profile" exact component={Profile}/>
             <Route path="/user/applications" exact component={Applications}/>
             <Route path="/user/dashboard" exact component={Dashboard} />
             <Route path="/user/dashboard/:jobId" exact component={JobDetails} />
             <Route path="/boss" exact component={Boss} />
-            {/* <Route path="/boss/myJobs" exact component={Boss} /> */}
-            {/* <Route path="/boss/view" component={Boss}/> */}
-            {/* <Route path="/boss/accepted" component={Boss}/> */}
+            <Route path="/boss/accepted" component={AcceptedUsers}/>
+            <Route path="/boss/create" component={CreateJob}/>
+            <Route path="/boss/myJobs" exact component={MyJobs} />
+            <Route path="/boss/myJobs/:jobId" exact component={BossJobDetails} />
+            <Route path="/boss/myJobs/:jobId/applications" exact component={ApplicationDetails} />
           </UserContext.Provider>
         </Switch>
       </div>
