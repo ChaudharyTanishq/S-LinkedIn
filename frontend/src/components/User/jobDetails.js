@@ -53,7 +53,7 @@ export function JobDetails(props) {
     } else if(jobData.applicationsCurrent >= jobData.applicationsMax){
       formContent = <button>Applications Filled up</button>
     } else if(!isLoadingApplications && userApplications) {
-      // TO BE EDITED
+      // TO BE CHECKED
       // console.log(userApplications)
       if(userApplications[0].length && isPresent(userApplications[0], jobData._id)){
         formContent = <button>already applied</button>
