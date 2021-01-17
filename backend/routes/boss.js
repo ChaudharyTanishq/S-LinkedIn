@@ -6,9 +6,9 @@ const router = express.Router()
 router.get('/profile', boss.getProfile)
 router.get('/myJobs', boss.getMyJobs)
 router.post('/create', boss.createJob)
-router.get('/:jobId', boss.showJob)
-router.post('/:jobId', boss.updateApplicationsJob)
-router.delete('/:jobId', boss.deleteJob)
-router.patch('/:jobId', boss.updateJob)
+router.get('/myJobs/:jobId', boss.showJob)
+router.post('/myJobs/:jobId', boss.updateApplicationsJob)
+router.delete('/myJobs/:jobId', boss.deleteJob)
+router.patch('/myJobs/:jobId', boss.updateJob)
 
 module.exports = router
