@@ -2,12 +2,6 @@ const { bool } = require('joi')
 const mongoose = require('mongoose')
 // const JobDesc = require('./JobDesc')
 
-const educationSchema = mongoose.Schema({
-    instituteName: { type: String, required: true},
-    yearStart: { type: Date, required: true},
-    yearEnd: { type: Date, required: false},
-})
-
 const peopleSchema = mongoose.Schema({
     name: { type: String, required: true, min:4, max: 32},
     email: { type: String, required: true}, 
@@ -19,7 +13,7 @@ const peopleSchema = mongoose.Schema({
     resume: { type: String, required: false}, 
     
     contact: { type: String, required: false}, 
-    education: [{ type: educationSchema, required: false }],
+    education: [],
     skills: [{ type: String, required: false }],
     
     appliedApplications: [],
