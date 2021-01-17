@@ -22,10 +22,10 @@ const peopleSchema = mongoose.Schema({
     education: [{ type: educationSchema, required: false }],
     skills: [{ type: String, required: false }],
     
-    appliedApplications: [{type: Object, required: false}],
-    shortListedApplications: [{type: Object, required: false}],
-    acceptedApplications: [{type: Object, required: false}],
-    rejectedApplications: [{type: Object, required: false}]
+    appliedApplications: [],
+    shortListedApplications: [],
+    acceptedApplications: [],
+    rejectedApplications: []
 
 })
 
