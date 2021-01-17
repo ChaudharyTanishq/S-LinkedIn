@@ -368,8 +368,8 @@ const getAccepted = async (req, res) => {
         })
 
         
-        console.log('person email:', person.email)
-        console.log('shortlisted jobs:', jobs)
+        // console.log('person email:', person.email)
+        // console.log('shortlisted jobs:', jobs)
 
         let acceptedUsers = []
         for (let i = 0; i < jobs.length; i++) {
