@@ -25,7 +25,7 @@ function App() {
   const person = {
     default: ["login", "register"],
     user: ["dashboard", "profile", "applications"],
-    boss: ["create", "myJobs", "accepted"],
+    boss: ["create", "myJobs", "accepted", "profile"],
   };
   
   // NOTE WORKING
