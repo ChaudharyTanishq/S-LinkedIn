@@ -14,11 +14,11 @@ const createJob = async (req, res) => {
         title: req.body.title,
         recruiterName: req.body.recruiterName,
         recruiterEmail: req.body.recruiterEmail,
-        recruiterScoreCurr: req.body.recruiterScoreCurr,
-        recruiterScoreTotal: req.body.recruiterScoreTotal,
-        positionsCurrent: req.body.positionsCurrent,
+        jobScoreCurr: 0,
+        jobScoreTotal: 0,
+        positionsCurrent: 0,
         positionsMax: req.body.positionsMax,
-        applicationsCurrent: req.body.applicationsCurrent,
+        applicationsCurrent: 0,
         applicationsMax: req.body.applicationsMax,
         datePosting: req.body.datePosting,
         dateDeadline: req.body.dateDeadline,
@@ -26,17 +26,17 @@ const createJob = async (req, res) => {
         jobType: req.body.jobType,
         duration: req.body.duration,
         salary: req.body.salary,
-        appliedApplications: req.body.appliedApplications,
-        shortListedApplications: req.body.shortListedApplications,
-        acceptedApplications: req.body.acceptedApplications,
-        rejectedApplications: req.body.rejectedApplications
+        appliedApplications: [],
+        shortListedApplications: [],
+        acceptedApplications: [],
+        rejectedApplications: []
     })
 
     try {
         const savedNewJob = await newJob.save()
         res.status(200).json(savedNewJob)
     } catch(error) {
-        res.status(502).json({message: err})        
+        res.status(502).json(error)        
     }
 }
 
@@ -44,8 +44,50 @@ const createJob = async (req, res) => {
 // WORKS
 const deleteJob = async (req, res) => {
     try {
-        const job = await JobDesc.findOneAndDelete(req.params.jobId)
-        res.json(job)
+        // const job = await JobDesc.findOneAndDelete(req.params.jobId)
+        const job = await JobDesc.findById(req.params.jobId)
+
+        // logic to remove this listing from all applicants' lists
+        
+
+        // takes a list from this job, and kills any signs left of
+        // this job for persons
+        const killJob = async (applicationAll)=>{
+            for(let i = 0; i < applicationAll.length; i++){
+                let currentApplicantId = applicationAll[i].personId
+                const person = await People.findById(currentApplicantId)
+    
+    
+                // removin this job from all the lists this job could be in, 
+                // for any person
+                person.appliedApplications = person.appliedApplications.filter(
+                    (application)=> application.jobId != job._id
+                )
+    
+                person.shortListedApplications = person.shortListedApplications.filter(
+                    (application)=> application.jobId != job._id
+                )
+    
+                person.acceptedApplications = person.acceptedApplications.filter(
+                    (application)=> application.jobId != job._id
+                )
+    
+                person.rejectedApplications = person.rejectedApplications.filter(
+                    (application)=> application.jobId != job._id
+                )
+                
+                person.save()
+            }
+        }
+
+        killJob(job.appliedApplications)
+        killJob(job.shortListedApplications)
+        killJob(job.acceptedApplications)
+        killJob(job.rejectedApplications)
+        
+        const jobKilled = await JobDesc.findOneAndDelete(req.params.jobId)
+        // console.log(job)
+        res.json(jobKilled)
     } catch(error) {
         res.status(502).send({message: error})
     }
@@ -79,11 +121,11 @@ const getMyJobs = async (req, res) => {
 
     // getting that boss's job list
     try {
-        const jobs = await JobDesc.findOne({recruiterEmail: person.email})
+        const jobs = await JobDesc.find({recruiterEmail: person.email})
         res.json(jobs)
     } catch(error) {
         console.log(error)
-        res.status(502).send({message: error})
+        res.status(502).send({message: error.message})
     }
 }
 
@@ -92,13 +134,8 @@ const getMyJobs = async (req, res) => {
 const showJob = async (req, res) => {
     try {
         // shows all the lists
-        const applications = await JobDesc.findById(req.params.jobId)
-        res.status(200).send([
-            applications.appliedApplications,
-            applications.shortListedApplications,
-            applications.acceptedApplications,
-            applications.rejectedApplications
-        ])
+        const job = await JobDesc.findById(req.params.jobId)
+        res.status(200).send(job)
     } catch(error) {
         res.status(502).send({message: error})
     }    
@@ -107,71 +144,178 @@ const showJob = async (req, res) => {
 // changes whatever list the users belong to
 // all the changes happen in the frontend
 // CHECK WORKING
+// UPDATE WORKING ACCORDING TO NEW ITEMS PUSHED
+// CHECK USER ROUTE FOR APPLICATION
 const updateApplicationsJob = async (req, res) => {
     try {
         const job = await JobDesc.findById(req.params.jobId)
 
         // updating all the application lists for the job
-        job.appliedApplications = [...(new Set(req.params.appliedApplications))]
-        job.shortListedApplications = [...(new Set(req.params.shortListedApplications))]
-        job.acceptedApplications = [...(new Set(req.params.acceptedApplications))]
-        job.rejectedApplications = [...(new Set(req.params.rejectedApplications))]
-        
-        // // updating current count of positions and applications
-        // job.applicationsCurrent = job.appliedApplications.length
-        // job.positionsCurrent = job.acceptedApplications.length
+        job.appliedApplications = [...(new Set(req.body[0]))]
+        job.shortListedApplications = [...(new Set(req.body[1]))]
+        job.acceptedApplications = [...(new Set(req.body[2]))]
+        job.rejectedApplications = [...(new Set(req.body[3]))]
+
+        // console.log('job save karo yaaron', job);
+
+        // updating current count of positions and applications
+        job.applicationsCurrent = job.appliedApplications.length
+        job.positionsCurrent = job.acceptedApplications.length
         const updatedJob = await job.save()
 
+        // METHOD
         // updating the application lists for the users in them
         // case 1: applied -> shortlist
         for(let i = 0; i < job.shortListedApplications.length; i++){
-            let currentApplicantId = job.shortListedApplications[i]
+            let currentApplicantId = job.shortListedApplications[i].personId
             const person = await People.findById(currentApplicantId)
 
             // remove that job from applied
-            const index = person.appliedApplications.indexOf(req.params.jobId);
-            if (index > -1) person.appliedApplications.array.splice(index, 1)
+            // old method
+            // const index = person.appliedApplications.indexOf(req.params.jobId);
+            // if (index > -1) person.appliedApplications.array.splice(index, 1)
+            
+            // new method
+            person.appliedApplications = person.appliedApplications.filter(
+                (application)=> application.jobId != job._id
+            )
+        
             // add that job to shortlist
-            person.shortListedApplications.push(req.params.jobId)
+            person.shortListedApplications.push(
+                {jobId: job._id, jobTitle: job.title}
+            )
             person.save()
         }
 
         // case 2: shortlist -> accept
-        for(let i = 0; i < job.shortListedApplications.length; i++){
-            let currentApplicantId = job.shortListedApplications[i]
-            const person = await People.findById(currentApplicantId)
-
-            // remove that job from shortlisted
-            const index = person.shortListedApplications.indexOf(req.params.jobId);
-            if (index > -1) person.shortListedApplications.array.splice(index, 1)
-            
-            // add that job to accepted, saving the time as well
-            person.acceptedApplications.push((req.params.jobId, new Date()))
-            person.save()
-        }
-
-        // case 3: any -> reject
-        for(let i = 0; i < job.rejectedApplications.length; i++){
-            let currentApplicantId = job.rejectedApplications[i]
+        for(let i = 0; i < job.acceptedApplications.length; i++){
+            let currentApplicantId = job.acceptedApplications[i].personId
             const person = await People.findById(currentApplicantId)
 
             // remove that job from applied
-            const index1 = person.appliedApplications.indexOf(req.params.jobId);
-            if (index1 > -1) person.appliedApplications.array.splice(index1, 1)
+            // old method
+            // const index = person.appliedApplications.indexOf(req.params.jobId);
+            // if (index > -1) person.appliedApplications.array.splice(index, 1)
             
+            // new method
+            // accept can only happen after shortlisted
+            // thus, below is not needed
+            // person.appliedApplications = person.appliedApplications.filter(
+            //     (application)=> application.jobId != job._id
+            // )
+        
+            person.shortListedApplications = person.shortListedApplications.filter(
+                (application)=> application.jobId != job._id
+            )
+
+            // note that now rest of the jobs for all person's list go into rejected
+            // auto-reject
+            // extension syntax: a.push.apply(a, b)
+            person.rejectedApplications.push.apply(
+                person.rejectedApplications, person.appliedApplications
+            )
+            person.appliedApplications = []
+            person.rejectedApplications.push.apply(
+                person.rejectedApplications, person.shortListedApplications
+            )
+            person.shortListedApplications = []
+
+            // so its fine for the person now, 
+            // but not for each and every job they belonged to
+
+            // go over the rejected array to update all lists for the jobs
+            for (let j = 0; j < person.rejectedApplications.length; j++) {
+                const element = person.rejectedApplications[j];
+                console.log("TROUBLE: ",element)
+                const tempJob = await JobDesc.findById(element.jobId)
+                
+                // now inside of the temp job, we go through all the valid lists
+                // and then remove this guy
+                tempJob.appliedApplications = tempJob.appliedApplications.filter(
+                    (applicationPerson)=>applicationPerson.personId != person._id
+                )
+
+                tempJob.shortListedApplications = tempJob.shortListedApplications.filter(
+                    (applicationPerson)=>applicationPerson.personId != person._id
+                )
+                // should not be needed, but eh 
+                tempJob.acceptedApplications = tempJob.acceptedApplications.filter(
+                    (applicationPerson)=>applicationPerson.personId != person._id
+                )
+
+
+                // what if the guy is already in rejected?
+                // well, WE FUCKING REJECT HIM AGAIN 
+                tempJob.acceptedApplications = tempJob.acceptedApplications.filter(
+                    (applicationPerson)=>applicationPerson.personId != person._id
+                )
+
+                // now, add this guy in rejected list
+                tempJob.rejectedApplications.push({
+                    personId: person._id,
+                    name: person.name,
+                    SOP: req.body.SOP,
+                    rating: person.rating,
+                    date: new Date(),
+                    resume: person.resume,
+                    skills: person.skills
+                })
+
+                tempJob.save()
+            }
+
+            // FINALLY add that original source job to accepted in the person's list
+            person.acceptedApplications.push(
+                {jobId: job._id, jobTitle: job.title, time: new Date()}
+            )
+            person.save()
+        }
+
+        // old function to do the above shit
+        // also, wtf just happened
+        // // case 2: shortlist -> accept
+        // for(let i = 0; i < job.shortListedApplications.length; i++){
+        //     let currentApplicantId = job.shortListedApplications[i]
+        //     const person = await People.findById(currentApplicantId)
+
+        //     // remove that job from shortlisted
+        //     const index = person.shortListedApplications.indexOf(req.params.jobId);
+        //     if (index > -1) person.shortListedApplications.array.splice(index, 1)
+            
+        //     // add that job to accepted, saving the time as well
+        //     person.acceptedApplications.push((req.params.jobId, new Date()))
+        //     person.save()
+        // }
+
+        // case 3: any -> reject
+        for(let i = 0; i < job.rejectedApplications.length; i++){
+            let currentApplicantId = job.rejectedApplications[i].personId
+            const person = await People.findById(currentApplicantId)
+
+            // remove that job from applied
+            person.appliedApplications = person.appliedApplications.filter(
+                (application)=> application.jobId != job._id
+            )     
 
             // remove that job from shortlisted
-            const index2 = person.shortListedApplications.indexOf(req.params.jobId);
-            if (index2 > -1) person.shortListedApplications.array.splice(index2, 1)
-            
+            person.shortListedApplications = person.shortListedApplications.filter(
+                (application)=> application.jobId != job._id
+            )
 
             // remove that job from accepted
-            const index3 = person.acceptedApplications.indexOf(req.params.jobId);
-            if (index3 > -1) person.acceptedApplications.array.splice(index3, 1)
-            
+            person.acceptedApplications = person.acceptedApplications.filter(
+                (application)=> application.jobId != job._id
+            )
+
+            // WHY FUCKING NOT
+            person.rejectedApplications = person.rejectedApplications.filter(
+                (application)=> application.jobId != job._id
+            )
 
             // and now add that job to rejected
-            person.rejectedApplications.push(req.params.jobId)
+            person.rejectedApplications.push(
+                {jobId: job._id, jobTitle: job.title, time: new Date()}
+            )
             person.save()
         }
 
