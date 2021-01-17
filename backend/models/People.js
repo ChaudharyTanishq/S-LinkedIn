@@ -6,6 +6,9 @@ const peopleSchema = mongoose.Schema({
     name: { type: String, required: true, min:4, max: 32},
     email: { type: String, required: true}, 
     password: { type: String, required: true, min: 8, max: 128},
+    
+    bio: {type: String, required: false},
+    
     rating: [{ type: Number, default: [0, 0] }],
     isBoss: {type: Boolean, required: true, default: false}, 
 
