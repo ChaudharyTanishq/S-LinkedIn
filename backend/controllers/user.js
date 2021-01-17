@@ -19,7 +19,11 @@ const updateProfile = async (req, res) => {
         req.user = jwt.verify(token, "TOKEN_SECRET")
         const person = await People.findById({_id: req.user._id})
 
-        // do something
+        // updating each field
+        person.email = req.body.email
+        person.name = req.body.name
+        person.contact = req.body.contact
+        person.password = req.body.password
 
         person.save()
         res.json(person)
