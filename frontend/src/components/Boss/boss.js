@@ -11,8 +11,10 @@ function BossProfile(props) {
   const [isSubmitted, setIsSubmitted] = useState(false)
 
   const onSubmit = (formData) => {
-    console.log(formData);
+    // console.log(formData);
     try {
+      // adding the key
+      formData.email = data.email
       api.patch('/boss/profile', formData)
     } catch (error) {}
 
@@ -26,14 +28,6 @@ function BossProfile(props) {
     content = (
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
-          Email:{" "}
-          <input
-            name="email"
-            defaultValue={data.email}
-            placeholder="email"
-            ref={register({ required: true })}
-          />
-          {errors.email && "name is required"}
           <br></br>
           Name:{" "}
           <input
