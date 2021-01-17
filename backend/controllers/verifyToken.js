@@ -11,8 +11,8 @@ async function getWho (req, res){
         const verified = jwt.verify(token, "TOKEN_SECRET")
         req.user = verified
         const person = await People.findOne({_id: req.user._id})
-        if(person.isBoss) return res.status(200).json({isBoss: true, name: person.name})
-        else return res.status(200).json({isBoss: false, name: person.name}) 
+        if(person.isBoss) return res.status(200).json({isBoss: true, name: person.name, email: person.email})
+        else return res.status(200).json({isBoss: false, name: person.name, email: person.email}) 
     } catch(error) {
         return res.status(400).send("invalid token!")
     }
