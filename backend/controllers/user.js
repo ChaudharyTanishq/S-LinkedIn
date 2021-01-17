@@ -3,7 +3,48 @@ const jwt = require('jsonwebtoken')
 const People = require('../models/People')
 
 const getProfile = async (req, res) => {
-    res.send('user profile')
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        const person = await People.findOne({_id: req.user._id})
+        res.json(person)
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
+}
+
+const updateProfile = async (req, res) => {
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        const person = await People.findById({_id: req.user._id})
+
+        // do something
+
+        person.save()
+        res.json(person)
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
+}
+
+const updateEducation = async (req, res) => {
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        const person = await People.findById({_id: req.user._id})
+
+        // console.log('this is the request', req)
+
+        // do something
+        person.education = req.body
+        // console.log(person.education)
+
+        person.save()
+        res.json(person)
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
 }
 
 // lists all the jobs
@@ -90,5 +131,7 @@ module.exports = {
     getDashboard,
     showJob,
     applyJob,
-    getApplications
+    getApplications,
+    updateProfile,
+    updateEducation
 }
