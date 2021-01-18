@@ -108,9 +108,31 @@ function UserProfile(props) {
   const api = generateApi(authToken);
   const [isLoading, data, errorData] = useApiGet(api, "/user/profile");
   const [isSubmitted, setIsSubmitted] = useState(false)
+	const [isLoadingSkills, skills, errorSkillsData] = useApiGet(api, '/boss/skillSet')
+
+  // console.log(data.skills)
+
+  const expandSkills = (skills) => {
+    let skillContent = []
+
+    if(!skills) return skillContent
+
+    for (let i = 0; i < skills.length; i++) {
+      const skill = skills[i];
+      skillContent.push(
+        <li>{skill}</li>
+      )
+    }
+    return <ul>{skillContent}</ul>
+  }
 
   const onSubmit = (formData) => {
-    console.log(formData);
+    // messing with skill set
+    let x = formData.skills 
+    x = x.replace(' ', '')
+    x = x.split(',')
+    formData.skills = x
+    // console.log(formData);
     try {
       api.patch('/user/profile', formData)
     } catch (error) {}
@@ -160,8 +182,25 @@ function UserProfile(props) {
             ref={register({ required: true, minLength: 8, maxLength: 128 })}
           />
           {errors.password && "password must be in between 8 and 128 letters"}
-          {/* {expandEducation(data.education)}
-				<button>Add new Education</button> */}
+          <br></br>
+
+          Your Current Skills:
+          {data.skills.length?expandSkills(data.skills): "add some now!"}
+          <br></br>
+
+          Hot Skills Popular acress Jobs and other Users:
+          {isLoadingSkills? "loading popular skills ...": expandSkills(skills)}
+          <br></br>
+
+          Skills (input comma separated values; new ones overwrite old ones):{" "}
+          <input
+            name="skills"
+            defaultValue=""
+            placeholder="name"
+            ref={register({ required: false })}
+          />
+          {errors.skills && "some issue with skills. did you input correctly?"}
+          <br></br>
           <input type="submit" value="submit" />
         </form>
 

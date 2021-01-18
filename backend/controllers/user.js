@@ -24,6 +24,7 @@ const updateProfile = async (req, res) => {
         person.name = req.body.name
         person.contact = req.body.contact
         person.password = req.body.password
+        person.skills = req.body.skills
 
         person.save()
         res.json(person)

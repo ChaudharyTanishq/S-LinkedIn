@@ -399,25 +399,32 @@ const getSkills = async (req, res) => {
         const jobs = await JobDesc.find()
         for (let i = 0; i < jobs.length; i++) {
             const job = jobs[i];
+            
             for (let j = 0; j < job.requiredSkillSet.length; j++) {
                 const skill = job.requiredSkillSet[j];
                 skills.push(skill)
             }
-            skills.concat(job.requiredSkillSet)
         }
 
-        console.log('after', skills)
+        // console.log('after', skills)
 
         // adding skills listed out by other users
         const people = await People.find()
         for (let i = 0; i < people.length; i++) {
             const person = people[i];
-            skills.concat(person.skills)
+
+            for (let j = 0; j < person.skills.length; j++) {
+                const skill = person.skills[j];
+                skills.push(skill)
+            }
         }
+
+        // console.log('after', skills)
+        
 
         skills = [...(new Set(skills))]
 
-        console.log(skills)
+        // console.log(skills)
 
         res.json(skills)
     } catch(error) {
