@@ -232,7 +232,7 @@ const updateApplicationsJob = async (req, res) => {
             // go over the rejected array to update all lists for the jobs
             for (let j = 0; j < person.rejectedApplications.length; j++) {
                 const element = person.rejectedApplications[j];
-                console.log("TROUBLE: ",element)
+                // console.log("TROUBLE: ",element)
                 const tempJob = await JobDesc.findById(element.jobId)
                 
                 // now inside of the temp job, we go through all the valid lists
@@ -390,6 +390,41 @@ const getAccepted = async (req, res) => {
     }
 }
 
+
+const getSkills = async (req, res) => {
+    try {
+        let skills = []
+
+        // adding skills listed out required for jobs
+        const jobs = await JobDesc.find()
+        for (let i = 0; i < jobs.length; i++) {
+            const job = jobs[i];
+            for (let j = 0; j < job.requiredSkillSet.length; j++) {
+                const skill = job.requiredSkillSet[j];
+                skills.push(skill)
+            }
+            skills.concat(job.requiredSkillSet)
+        }
+
+        console.log('after', skills)
+
+        // adding skills listed out by other users
+        const people = await People.find()
+        for (let i = 0; i < people.length; i++) {
+            const person = people[i];
+            skills.concat(person.skills)
+        }
+
+        skills = [...(new Set(skills))]
+
+        console.log(skills)
+
+        res.json(skills)
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
+}
+
 module.exports = {
     getProfile,
     createJob,
@@ -399,5 +434,6 @@ module.exports = {
     getMyJobs,
     updateApplicationsJob,
     updateProfile,
-    getAccepted
+    getAccepted,
+    getSkills
 }

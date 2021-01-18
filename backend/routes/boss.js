@@ -3,6 +3,7 @@ const boss = require('../controllers/boss')
 const { bossAuth, userAuth, getWho } = require('../controllers/verifyToken')
 
 const router = express.Router()
+router.get('/skillSet', boss.getSkills)
 router.get('/profile', boss.getProfile)
 router.patch('/profile', boss.updateProfile)
 router.get('/myJobs', boss.getMyJobs)

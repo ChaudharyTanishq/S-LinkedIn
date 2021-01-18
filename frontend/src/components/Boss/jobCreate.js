@@ -7,6 +7,7 @@ function CreateJob(props) {
 	const {authToken} = useContext(UserContext)
 	const api = generateApi(authToken)
 	const [isLoading, recruiterData, errorRecruiterData] = useApiGet(api, '/default/who')
+	const [isLoadingSkills, skills, errorSkillsData] = useApiGet(api, '/boss/skillSet')
   const { register, handleSubmit, errors } = useForm();
   const [errorData, setErrorData] = useState("");
   const [isCreateJob, setIsCreateJob] = useState(false);
@@ -15,6 +16,20 @@ function CreateJob(props) {
   const isDate = (date) => {
     return !isNaN(Date.parse(date));
   };
+
+  const expandSkills = (skills) => {
+    let skillContent = []
+
+    if(!skills) return skillContent
+
+    for (let i = 0; i < skills.length; i++) {
+      const skill = skills[i];
+      skillContent.push(
+        <li>{skill}</li>
+      )
+    }
+    return <ul>{skillContent}</ul>
+  }
 
   const onSubmit = async (data) => {
 		if(!isDate(data.dateDeadline)){
@@ -25,14 +40,26 @@ function CreateJob(props) {
 		if(jobType === ''){
 			setErrorData("select job type!")
 			return 
-		}
+    }
+    
+    if(isNaN(parseInt(data.salary))){
+      setErrorData("salary must be integer!")
+      return;
+    }
+
+
+    // messing with required skill set
+    let x = data.requiredSkillSet 
+    x = x.replace(' ', '')
+    x = x.split(',')
+    data.requiredSkillSet = x
 
 		try {
 			data.jobType = jobType
 			data.datePosting = new Date()
 			data.recruiterName = recruiterData.name
 			data.recruiterEmail = recruiterData.email
-			console.log(data);
+			// console.log(data);
 			await api.post("/boss/create", data);
       setIsCreateJob(true);
     } catch (error) {
@@ -107,8 +134,23 @@ function CreateJob(props) {
             ref={register({ required: true })}
           />
           {errors.dateDeadline && "dateDeadline is required"}
+          <br></br>
 
+          Required Skill Set (comma separated list):<input
+            name="requiredSkillSet"
+            placeholder="requiredSkillSet"
+            ref={register({ required: false })}
+          />
+          {errors.requiredSkillSet && "requiredSkillSet is filled incorrectly"}
 					<br></br>
+
+          {isLoadingSkills? "Loading popular skills ...": (
+            <div>
+              here are some popular skills to choose from:
+              {expandSkills(skills)}
+            </div>
+          )}
+
 					Quick Note: Dont worry if the weekday is wrong or skipped.
 					<br></br>
 					Rest should be correct though.
