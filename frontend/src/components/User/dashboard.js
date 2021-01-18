@@ -12,18 +12,14 @@ function Dashboard(props) {
   const [searchBarJob, setSearchBarJob] = useState("");
   const [salaryMin, setSalaryMin] = useState(0);
   const [salaryMax, setSalaryMax] = useState(Infinity);
-  const [durationMin, setDurationMin] = useState(1);
-  const [durationMax, setDurationMax] = useState(7);
+  const [searchBarDuration, setSearchBarDuration] = useState(0);
   const [ascendingSortTitle, setAscendingSortTitle] = useState(false);
   const [ascendingSortSalary, setAscendingSortSalary] = useState(false);
   const [ascendingSortDuration, setAscendingSortDuration] = useState(false);
 
   // tips for searching
   let tips = [
-    <li>setting duration 0 is equal to indefinite </li>,
-    <li>
-      setting min-duration 0 will show all results (and overwrite max-duration){" "}
-    </li>,
+    <li>setting duration 0 means indefinite. we show all jobs in that case </li>,
     <li>
       salary is reset to 0 in case of invalid inputs (try typing letters!)
     </li>,
@@ -41,24 +37,7 @@ function Dashboard(props) {
     return finalContent;
   };
 
-  // // self implemented searching (what a waste of time ;-;)
-  // // searching for the title
-  // const searchTitle = (content) =>{
-  // 	let titles = []
-  // 	for (let i = 0; i < content.length; i++) {
-  // 		const element = content[i];
-  // 		titles.push(element.title)
-  // 	}
-  // 	let finaltitles = titles.filter(titles => titles.includes(searchBar))
-  // 	let finalContent = []
-  // 	for (let i = 0; i < content.length; i++) {
-  // 		const element = content[i];
-  // 		if(finaltitles.includes(element.title)) finalContent.push(element)
-  // 	}
-  // 	return finalContent
-  // }
-
-  // searching for the title
+  // searching for the title constraints
   const searchTitle = (content) => {
     const fuse = new Fuse(content, {
       keys: ["title"],
@@ -92,21 +71,7 @@ function Dashboard(props) {
 		else return finalContent.reverse();
   };
 
-  // searching for the time constraints
-  const searchDuration = (content) => {
-    let finalContent = [];
-    for (let i = 0; i < content.length; i++) {
-      const element = content[i];
-      if (durationMin === 0) finalContent.push(element);
-      else if (durationMin < element.duration && element.duration < durationMax)
-        finalContent.push(element);
-    }
-		finalContent.sort((a, b)=> {return a.duration < b.duration ? 1: -1})
-		if(ascendingSortDuration) return finalContent;
-		else return finalContent.reverse();
-	};
-
-  // searching for the job
+  // searching for the job type constraints
   const searchJobType = (content) => {
     let jobTypes = [];
     for (let i = 0; i < content.length; i++) {
@@ -124,6 +89,19 @@ function Dashboard(props) {
     return finalContent;
   };
 
+  // searching for the job duratoin
+  const searchJobDuration = (content) => {
+		content = content.filter((element)=>{
+			if(element.duration < searchBarDuration) 
+			return element;
+		});
+
+		content.sort((a, b)=> {return a.duration < b.duration ? 1: -1})
+
+		if(ascendingSortDuration) return content;
+		else return content.reverse();
+  };
+
   const handleSalaryMin = (e) => {
     try {
       if (0 <= parseInt(e.target.value) && parseInt(e.target.value) < Infinity)
@@ -135,33 +113,12 @@ function Dashboard(props) {
   };
 
   const handleSalaryMax = (e) => {
-    // console.log(e.target.value)
     try {
       if (0 <= parseInt(e.target.value) && parseInt(e.target.value) < Infinity)
         setSalaryMax(parseInt(e.target.value));
       else setSalaryMax(0);
     } catch (error) {
       setSalaryMax(Infinity);
-    }
-  };
-
-  const handleDurationMin = (e) => {
-    try {
-      if (1 <= parseInt(e.target.value) && parseInt(e.target.value) <= 7)
-        setDurationMin(parseInt(e.target.value));
-      else setDurationMin(0);
-    } catch (error) {
-      setDurationMin(0);
-    }
-  };
-
-  const handleDurationMax = (e) => {
-    try {
-      if (1 <= parseInt(e.target.value) && parseInt(e.target.value) <= 7)
-        setDurationMax(parseInt(e.target.value));
-      else setDurationMax(0);
-    } catch (error) {
-      setDurationMax(0);
     }
   };
 
@@ -173,11 +130,11 @@ function Dashboard(props) {
       content = searchTitle(content);
       content = searchJobType(content);
       content = searchSalary(content);
-      content = searchDuration(content);
+      content = searchJobDuration(content);
     }
   }
 
-  // showing the relevant jobs
+  // showing the relevant jobs, using the compontent Job to handle this part
   let displayContent = [];
   if (content.length) {
     for (let i = 0; i < content.length; i++) {
@@ -187,12 +144,6 @@ function Dashboard(props) {
   } else {
     displayContent = "nothing relevant found. try broadneing your search";
   }
-
-  // console.log('searching: ', searchBar)
-  // console.log('job: ', searchBarJob)
-  // console.log('all content',content)
-  // console.log('duration min', durationMin)
-  // console.log('duration max', durationMax)
 
   return (
     <div className="Dashboard">
@@ -237,24 +188,24 @@ function Dashboard(props) {
         Sort {ascendingSortSalary ? "Ascending" : "Descending"}
       </button>
       <br></br>
-      {/*  durationMin */}
-      Duration:
-      <input
-        name="durationMin"
-        value={durationMin}
-        placeholder="durationMin"
-        onChange={handleDurationMin}
-      />
-      {/* durationMax */}
-      <input
-        name="durationMax"
-        value={durationMax}
-        placeholder="durationMax"
-        onChange={handleDurationMax}
-      />
-      <button onClick={() => setAscendingSortDuration(!ascendingSortDuration)}>
+
+      {/* duration dropdown */}
+			Duration:{" "}
+      <select onChange={(e) => setSearchBarDuration(e.target.value)}>
+        <option value={8}>0</option>
+        <option value={1}>1</option>
+        <option value={2}>2</option>
+        <option value={3}>3</option>
+        <option value={4}>4</option>
+        <option value={5}>5</option>
+        <option value={6}>6</option>
+        <option value={7}>7</option>
+      </select>
+			<button onClick={() => setAscendingSortDuration(!ascendingSortDuration)}>
         Sort {ascendingSortDuration ? "Ascending" : "Descending"}
       </button>
+      <br></br>
+
       <div>
         <ul>{tips}</ul>
         <br></br>
