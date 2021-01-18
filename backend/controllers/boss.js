@@ -54,34 +54,33 @@ const deleteJob = async (req, res) => {
         const job = await JobDesc.findById(req.params.jobId)
 
         // logic to remove this listing from all applicants' lists
-        
-
         // takes a list from this job, and kills any signs left of
         // this job for persons
         const killJob = async (applicationAll)=>{
+            // console.log('sent list from job:', applicationAll)
             for(let i = 0; i < applicationAll.length; i++){
                 let currentApplicantId = applicationAll[i].personId
                 const person = await People.findById(currentApplicantId)
-    
-    
+                    
                 // removin this job from all the lists this job could be in, 
                 // for any person
                 person.appliedApplications = person.appliedApplications.filter(
-                    (application)=> application.jobId != job._id
+                    application => JSON.stringify(application.jobId) != JSON.stringify(job._id) 
                 )
     
                 person.shortListedApplications = person.shortListedApplications.filter(
-                    (application)=> application.jobId != job._id
+                    application => JSON.stringify(application.jobId) != JSON.stringify(job._id) 
                 )
-    
+
                 person.acceptedApplications = person.acceptedApplications.filter(
-                    (application)=> application.jobId != job._id
+                    application => JSON.stringify(application.jobId) != JSON.stringify(job._id) 
                 )
-    
+
                 person.rejectedApplications = person.rejectedApplications.filter(
-                    (application)=> application.jobId != job._id
+                    application => JSON.stringify(application.jobId) != JSON.stringify(job._id) 
                 )
-                
+
+                // console.log('person data:', person)                
                 person.save()
             }
         }
@@ -91,10 +90,16 @@ const deleteJob = async (req, res) => {
         killJob(job.acceptedApplications)
         killJob(job.rejectedApplications)
         
-        const jobKilled = await JobDesc.findOneAndDelete(req.params.jobId)
-        // console.log(job)
+        job.save()
+        // console.log('job:', job)
+        
+        const jobKilled = await JobDesc.findByIdAndDelete(job._id)
+        // console.log('killed job', jobKilled)
+        jobKilled.save()        
         res.json(jobKilled)
+
     } catch(error) {
+        console.log(error)
         res.status(502).send({message: error})
     }
 }
@@ -103,11 +108,13 @@ const deleteJob = async (req, res) => {
 // WORKS
 const updateJob = async (req, res) => {
     try {
-        const job = await JobDesc.findOneAndUpdate(req.params.jobId, {
+        // const job = await JobDesc.findByIdAndUpdate()
+        const job = await JobDesc.findByIdAndUpdate(req.params.jobId, {
             positionsMax: req.body.positionsMax,
             applicationsMax: req.body.applicationsMax,
             dateDeadline: req.body.dateDeadline
         })
+        // console.log(job)
         const updatedJob = await job.save()
         res.json(updatedJob)
     } catch(error) {
@@ -156,6 +163,8 @@ const updateApplicationsJob = async (req, res) => {
     try {
         const job = await JobDesc.findById(req.params.jobId)
 
+        console.log(job)
+
         // updating all the application lists for the job
         job.appliedApplications = [...(new Set(req.body[0]))]
         job.shortListedApplications = [...(new Set(req.body[1]))]
@@ -175,15 +184,15 @@ const updateApplicationsJob = async (req, res) => {
         for(let i = 0; i < job.shortListedApplications.length; i++){
             let currentApplicantId = job.shortListedApplications[i].personId
             const person = await People.findById(currentApplicantId)
+            console.log('person found', person)
 
             // remove that job from applied
             // old method
             // const index = person.appliedApplications.indexOf(req.params.jobId);
-            // if (index > -1) person.appliedApplications.array.splice(index, 1)
-            
+            // if (index > -1) person.appliedApplications.array.splice(index, 1) 
             // new method
             person.appliedApplications = person.appliedApplications.filter(
-                (application)=> application.jobId != job._id
+                (application)=> JSON.stringify(application.jobId) != JSON.stringify(job._id)
             )
         
             // add that job to shortlist
@@ -210,8 +219,12 @@ const updateApplicationsJob = async (req, res) => {
             //     (application)=> application.jobId != job._id
             // )
         
+            person.appliedApplications = person.appliedApplications.filter(
+                (application)=> JSON.stringify(application.jobId) != JSON.stringify(job._id)
+            )
+
             person.shortListedApplications = person.shortListedApplications.filter(
-                (application)=> application.jobId != job._id
+                (application)=> JSON.stringify(application.jobId) != JSON.stringify(job._id)
             )
 
             // note that now rest of the jobs for all person's list go into rejected
@@ -231,29 +244,36 @@ const updateApplicationsJob = async (req, res) => {
 
             // go over the rejected array to update all lists for the jobs
             for (let j = 0; j < person.rejectedApplications.length; j++) {
-                const element = person.rejectedApplications[j];
-                // console.log("TROUBLE: ",element)
-                const tempJob = await JobDesc.findById(element.jobId)
+                const element = person.rejectedApplications[j].jobId;
+                // console.log('person rejected applications', person.rejectedApplications)
+                // console.log('person current rejected application', person.rejectedApplications[j])
+                // console.log('person current rejected application jobId', person.rejectedApplications[j].jobId)
+
+                const tempJob = await JobDesc.findById(element)
+                // console.log('tempJob', tempJob)
                 
                 // now inside of the temp job, we go through all the valid lists
                 // and then remove this guy
                 tempJob.appliedApplications = tempJob.appliedApplications.filter(
-                    (applicationPerson)=>applicationPerson.personId != person._id
+                    (applicationPerson) => 
+                    JSON.stringify(applicationPerson.personId) != JSON.stringify(person._id)
                 )
 
                 tempJob.shortListedApplications = tempJob.shortListedApplications.filter(
-                    (applicationPerson)=>applicationPerson.personId != person._id
+                    (applicationPerson)=>
+                    JSON.stringify(applicationPerson.personId) != JSON.stringify(person._id)
                 )
                 // should not be needed, but eh 
                 tempJob.acceptedApplications = tempJob.acceptedApplications.filter(
-                    (applicationPerson)=>applicationPerson.personId != person._id
+                    (applicationPerson)=>
+                    JSON.stringify(applicationPerson.personId) != JSON.stringify(person._id)
                 )
 
 
                 // what if the guy is already in rejected?
                 // well, WE FUCKING REJECT HIM AGAIN 
                 tempJob.acceptedApplications = tempJob.acceptedApplications.filter(
-                    (applicationPerson)=>applicationPerson.personId != person._id
+                    (applicationPerson)=>JSON.stringify(applicationPerson.personId) != JSON.stringify(person._id)
                 )
 
                 // now, add this guy in rejected list
@@ -300,22 +320,22 @@ const updateApplicationsJob = async (req, res) => {
 
             // remove that job from applied
             person.appliedApplications = person.appliedApplications.filter(
-                (application)=> application.jobId != job._id
+                (application)=> JSON.stringify(application.jobId) != JSON.stringify(job._id)
             )     
 
             // remove that job from shortlisted
             person.shortListedApplications = person.shortListedApplications.filter(
-                (application)=> application.jobId != job._id
+                (application)=> JSON.stringify(application.jobId) != JSON.stringify(job._id)
             )
 
             // remove that job from accepted
             person.acceptedApplications = person.acceptedApplications.filter(
-                (application)=> application.jobId != job._id
+                (application)=> JSON.stringify(application.jobId) != JSON.stringify(job._id)
             )
 
             // WHY FUCKING NOT
             person.rejectedApplications = person.rejectedApplications.filter(
-                (application)=> application.jobId != job._id
+                (application)=> JSON.stringify(application.jobId) != JSON.stringify(job._id)
             )
 
             // and now add that job to rejected
@@ -382,7 +402,7 @@ const getAccepted = async (req, res) => {
             }
         }
 
-        console.log(acceptedUsers)
+        // console.log(acceptedUsers)
 
         res.json(acceptedUsers)
     } catch(error) {

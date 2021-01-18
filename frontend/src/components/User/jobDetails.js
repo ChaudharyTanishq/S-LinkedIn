@@ -44,18 +44,14 @@ export function JobDetails(props) {
 
   let formContent
   if(jobData){
-    // SKIPPING DATE VALIDATION: AFTER DEADLINE. 
-    // CAN BE HANDLED IN APPLICATIONS TOO
     if(jobData.positionsCurrent >= jobData.positionsMax){
       formContent = <button>Positions Filled up</button>
     } else if(jobData.applicationsCurrent >= jobData.applicationsMax){
       formContent = <button>Applications Filled up</button>
-    } else if(jobData.applicationsCurrent >= jobData.applicationsMax){
-      formContent = <button>Applications Filled up</button>
     } else if(!isLoadingApplications && userApplications) {
-      // TO BE CHECKED
-      // console.log(userApplications)
-      if(userApplications[0].length && isPresent(userApplications[0], jobData._id)){
+      if(userApplications[0].length >= 10){
+        formContent = <button>already applied to 10 jobs</button>
+      } else if(userApplications[0].length && isPresent(userApplications[0], jobData._id)){
         formContent = <button>already applied</button>
       } else if(userApplications[1].length && isPresent(userApplications[1], jobData._id)){
         formContent = <button>you are shortlisted currently</button>

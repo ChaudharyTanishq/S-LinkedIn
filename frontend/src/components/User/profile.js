@@ -40,7 +40,7 @@ function Education(props) {
       const element = education[i];
       // console.log(element)
       educationContent.push(
-        <ul>
+        <ul key={i}>
           <li>instituteName: {element.instituteName}</li>
           <li>yearStart: {element.yearStart}</li>
           <li>
@@ -120,7 +120,7 @@ function UserProfile(props) {
     for (let i = 0; i < skills.length; i++) {
       const skill = skills[i];
       skillContent.push(
-        <li>{skill}</li>
+        <li key={i}>{skill}</li>
       )
     }
     return <ul>{skillContent}</ul>

@@ -5,6 +5,7 @@ import { UserContext } from "../Utility/userContext";
 function ApplicationDetails(props) {
   const { authToken } = useContext(UserContext)
   const api = generateApi(authToken)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   // setting up status lists
   const [appliedApplications, setAppliedApplications] = useState(
@@ -71,8 +72,11 @@ function ApplicationDetails(props) {
       rejectedApplications,
     ];
     // console.log('done!', data);
-    api.post(props.url, data);
-    window.location.reload()
+    try {
+      api.post(props.url, data);
+    } catch (error) {}
+
+    setIsSubmitted(true);
   };
 
   // expansion of people inside a particular application status
@@ -97,7 +101,7 @@ function ApplicationDetails(props) {
               Skills: <ul>{skills}</ul>
             </li>
             <li>Resume: {element.resume}</li>
-            <li>Date of Application: {element.date}</li>
+            <li>Date: {element.date}</li>
           </ul>
           {func ? (
             <button onClick={() => func(element)}>{buttonName}</button>
@@ -134,6 +138,7 @@ function ApplicationDetails(props) {
           <div>Rejected: {expandArray(rejectedApplications, "", "empty")}</div>
         </div>
         <button onClick={submitApplicationStatus}>Save changes</button>
+        {isSubmitted? "submitted": ""}
       </div>
     </div>
   );

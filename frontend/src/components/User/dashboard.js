@@ -12,7 +12,7 @@ function Dashboard(props) {
   const [searchBarJob, setSearchBarJob] = useState("");
   const [salaryMin, setSalaryMin] = useState(0);
   const [salaryMax, setSalaryMax] = useState(Infinity);
-  const [searchBarDuration, setSearchBarDuration] = useState(0);
+  const [searchBarDuration, setSearchBarDuration] = useState(8);
   const [ascendingSortTitle, setAscendingSortTitle] = useState(false);
   const [ascendingSortSalary, setAscendingSortSalary] = useState(false);
   const [ascendingSortDuration, setAscendingSortDuration] = useState(false);
@@ -50,8 +50,8 @@ function Dashboard(props) {
     for (let i = 0; i < fuseSearchResults.length; i++) {
       const element = fuseSearchResults[i];
       finalContent.push(element.item);
-		}
-		
+    }
+    		
 		// return what sorted order?
     if (ascendingSortTitle) return finalContent;
     else return finalContent.reverse();

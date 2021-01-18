@@ -55,9 +55,10 @@ function UpdatingJob(props){
   const onSubmitUpdate = (data) => {
     // console.log("new data from update: ", data);
     try {
+      // console.log(url)
       api.patch(url, data)
-      setIsUpdated(true)
     } catch (error) {}
+    setIsUpdated(true)
   };
 
   // date validation
@@ -68,7 +69,7 @@ function UpdatingJob(props){
 
   let content
   if(isUpdated){
-    content = <Redirect to={url}/>
+    content = <Redirect to={'/boss/myJobs'}/>
   } else {
     content = (
 <form onSubmit={handleSubmit(onSubmitUpdate)}>

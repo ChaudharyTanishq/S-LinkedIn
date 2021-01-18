@@ -100,6 +100,12 @@ const applyJob = async (req, res) => {
         
         // console.log('PERSON ID', person._id)
         // console.log('JOB ID', req.params.jobId)
+        
+        // console.log(job.appliedApplications)
+        // console.log(person.appliedApplications)
+        
+        job.applicationsCurrent = job.appliedApplications.length
+
         job.save()
         person.save()
         // console.log(job.appliedApplications)
