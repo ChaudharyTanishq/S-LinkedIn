@@ -2,6 +2,34 @@ const JobDesc = require('../models/JobDesc')
 const jwt = require('jsonwebtoken')
 const People = require('../models/People')
 
+const postRating = async (req, res) => {
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        
+        // console.log(req.body)
+        // console.log(req.body.jobId)
+        const job = await JobDesc.findById(req.body.jobId)
+
+        if(!job.rating.length){
+            job.rating = [0, 0]
+        }
+
+        let temp = [
+            job.rating[0] + parseInt(req.body.rating),
+            job.rating[1] + 5
+        ]
+
+        job.rating = temp
+
+        // console.log('rating:', job.rating)
+        job.save()
+        res.status(200).send('success')
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
+}
+
 const getProfile = async (req, res) => {
     try {
         const token = req.header('auth-token')    
@@ -144,5 +172,6 @@ module.exports = {
     applyJob,
     getApplications,
     updateProfile,
-    updateEducation
+    updateEducation,
+    postRating
 }

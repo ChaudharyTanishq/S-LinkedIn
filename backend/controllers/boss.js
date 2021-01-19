@@ -1,6 +1,40 @@
 const JobDesc = require('../models/JobDesc')
 const jwt = require('jsonwebtoken')
 const People = require('../models/People')
+const Person = require('../models/People')
+
+const postRating = async (req, res) => {
+    try {
+        const token = req.header('auth-token')    
+        req.user = jwt.verify(token, "TOKEN_SECRET")
+        
+        // console.log(req.body)
+        // console.log(req.body.personId)
+        const person = await Person.findById(req.body.personId)
+        // try {
+        // } catch (error) {
+        //     console.log(error)
+        // }
+        
+        // console.log('before:', person)
+        if(!person.rating.length){
+            person.rating = [0, 0]
+        }
+
+        let temp = [
+            person.rating[0] + parseInt(req.body.rating),
+            person.rating[1] + 5
+        ]
+
+        person.rating = temp
+        // console.log(person)
+        // console.log('rating:', person.rating)
+        person.save()
+        res.status(200).send('success')
+    } catch(error) {
+        res.status(502).send({message: error})
+    }
+}
 
 const getProfile = async (req, res) => {
     try {
@@ -396,8 +430,11 @@ const getAccepted = async (req, res) => {
             const job = jobs[i];
             for (let j = 0; j < job.acceptedApplications.length; j++) {
                 let element = job.acceptedApplications[j];
+                let freshElement = await Person.findById(element.personId)
+                element.rating = freshElement.rating
                 element.jobType = job.jobType
                 element.jobTitle = job.title
+                element.newName = freshElement.name
                 acceptedUsers.push(element)
             }
         }
@@ -462,5 +499,6 @@ module.exports = {
     updateApplicationsJob,
     updateProfile,
     getAccepted,
-    getSkills
+    getSkills,
+    postRating
 }
