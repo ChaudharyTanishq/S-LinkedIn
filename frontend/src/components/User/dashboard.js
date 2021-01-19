@@ -16,6 +16,7 @@ function Dashboard(props) {
   const [ascendingSortTitle, setAscendingSortTitle] = useState(false);
   const [ascendingSortSalary, setAscendingSortSalary] = useState(false);
   const [ascendingSortDuration, setAscendingSortDuration] = useState(false);
+  const [ascendingSortRating, setAscendingSortRating] = useState(false);
 
   // tips for searching
   let tips = [
@@ -102,6 +103,18 @@ function Dashboard(props) {
 		else return content.reverse();
   };
 
+    // searching for the job duratoin
+    const searchRating = (content) => {
+
+      content.sort((a, b)=> {
+        if(a.rating.length && b.rating.length) return a.rating[0]/a.rating[1] < b.rating[0]/b.rating[1] ? 1: -1
+        else return 1
+      })
+  
+      if(ascendingSortDuration) return content;
+      else return content.reverse();
+    };
+
   const handleSalaryMin = (e) => {
     try {
       if (0 <= parseInt(e.target.value) && parseInt(e.target.value) < Infinity)
@@ -131,6 +144,7 @@ function Dashboard(props) {
       content = searchJobType(content);
       content = searchSalary(content);
       content = searchJobDuration(content);
+      content = searchRating(content);
     }
   }
 
@@ -205,6 +219,11 @@ function Dashboard(props) {
         Sort {ascendingSortDuration ? "Ascending" : "Descending"}
       </button>
       <br></br>
+
+
+			Rating: <button onClick={() => setAscendingSortRating(!ascendingSortRating)}>
+        Sort {ascendingSortRating ? "Ascending" : "Descending"}
+      </button>
 
       <div>
         <ul>{tips}</ul>

@@ -128,11 +128,16 @@ function UserProfile(props) {
 
   const onSubmit = (formData) => {
     // messing with skill set
-    let x = formData.skills 
-    x = x.replace(' ', '')
-    x = x.split(',')
-    formData.skills = x
-    // console.log(formData);
+
+    if(formData.skills !== ''){
+      let x = formData.skills 
+      x = x.replace(' ', '')
+      x = x.split(',')
+      formData.skills = x
+    } else {
+      formData.skills = data.skills
+    }
+
     try {
       api.patch('/user/profile', formData)
     } catch (error) {}
@@ -192,13 +197,20 @@ function UserProfile(props) {
           {isLoadingSkills? "loading popular skills ...": expandSkills(skills)}
           <br></br>
 
-          Skills (input comma separated values; new ones overwrite old ones):{" "}
+          Skills:{" "}
           <input
             name="skills"
             defaultValue=""
-            placeholder="name"
+            placeholder="eg: C++,python3,JavaScript"
             ref={register({ required: false })}
           />
+          <br></br>
+          NOTE: 
+          <ul>
+            <li>input comma separated values</li>
+            <li>new ones overwrite old ones</li>
+            <li>leave empty for old ones to stay as is</li>
+          </ul>
           {errors.skills && "some issue with skills. did you input correctly?"}
           <br></br>
           <input type="submit" value="submit" />
