@@ -10,23 +10,56 @@ function AcceptedUsers(props) {
   const [ascendingTitle, setAscendingTitle] = useState(false);
   const [ascendingDate, setAscendingDate] = useState(false);
   const [ascendingRating, setAscendingRating] = useState(false);
+  const [myRating, setMyRating] = useState(0)
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+
+  // submitting the form
+  const onSubmit = async (personId) => {
+    try {
+      // console.log("personId:", personId);
+      // console.log("rating save:", myRating);
+      await api.post('/boss/rating', {personId: personId, rating: myRating});
+      setIsSubmitted(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const expandUsers = (users) => {
     let list = [];
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
+      console.log(user)
       const rating =
         user.rating[1] === 0 || isNaN(user.rating[1])
           ? "unrated"
-          : user.rating[0] / user.rating[1];
+          : `${user.rating[0]} of ${user.rating[1]}`;
 
       list.push(
         <ul>
           <li>Job Title: {user.jobTitle}</li>
           <li>JobType: {user.jobType}</li>
-          <li>Person Name: {user.name}</li>
+          <li>Person Name: {user.name} {user.newName === user.name ? "":( "(new name: "+user.newName+")")}</li>
           <li>Date of Acceptance: {user.date}</li>
           <li>Rating: {rating}</li>
+          {isSubmitted? " submitted!":
+          <div>
+            {" "}
+            <select onChange={(e) => setMyRating(e.target.value)}>
+              <option value={8}>0</option>
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5</option>
+            </select>
+            {" "}
+            <button onClick={()=>onSubmit(user.personId)}>Save Rating</button>
+          
+          </div>
+          }
+          
         </ul>
       );
     }

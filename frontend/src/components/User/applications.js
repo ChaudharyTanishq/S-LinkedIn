@@ -10,12 +10,14 @@ function Applications(props) {
   const [isLoading, data, errorData] = useApiGet(api, "/user/applications", []);
   const { register, handleSubmit, errors } = useForm();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [myRating, setMyRating] = useState(0)
 
   // submitting the form
-  const onSubmit = async (formjobData) => {
+  const onSubmit = async (jobId) => {
     try {
-      console.log("rating save");
-      // await api.post(url, '');
+      // console.log("jobId:", jobId);
+      // console.log("rating save:", myRating);
+      await api.post('/user/rating', {jobId: jobId, rating: myRating});
       setIsSubmitted(true);
     } catch (error) {
       console.log(error);
@@ -27,29 +29,46 @@ function Applications(props) {
     for (let i = 0; i < a.length; i++) {
       const element = a[i];
       // console.log(element)
-      applications.push(
-        <li>
-          <Link to={"/user/dashboard/" + element.jobId}>
-            {element.jobTitle}
-          </Link>
-          {!accepted ? (
-            ""
-          ) : isSubmitted ? (
-            "saved!"
-          ) : (
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <input
-                name="rating"
-                defaultValue=""
-                placeholder="rating"
-                ref={register({ required: true, min: 0, max: 5 })}
-              />
-              {errors.SOP && "Valid rating is required within [0, 5]"}
-              <input type="submit" value="Apply" />
-            </form>
-          )}
-        </li>
-      );
+      
+      let content
+      if(!accepted) {
+        content = (
+          <li>
+            <Link to={"/user/dashboard/" + element.jobId}>
+              {element.jobTitle}
+            </Link>
+          </li>
+        )
+      } else if (isSubmitted) {
+        content = (
+          <li>
+            <Link to={"/user/dashboard/" + element.jobId}>
+              {element.jobTitle}
+            </Link>
+            {" saved rating"}
+          </li>
+        )
+      } else {
+        content = (
+          <li>
+            <Link to={"/user/dashboard/" + element.jobId}>
+              {element.jobTitle}
+            </Link>
+            {" "}
+            <select onChange={(e) => setMyRating(e.target.value)}>
+              <option value={8}>0</option>
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5</option>
+            </select>
+            {" "}
+            <button onClick={()=>onSubmit(element.jobId)}>Save Rating</button>
+          </li>
+        )
+      }
+      applications.push(content)
     }
 
     return <ul>{applications}</ul>;
