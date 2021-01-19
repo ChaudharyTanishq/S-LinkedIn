@@ -45,20 +45,20 @@ export function JobDetails(props) {
   let formContent
   if(jobData){
     if(jobData.positionsCurrent >= jobData.positionsMax){
-      formContent = <button>Positions Filled up</button>
+      formContent = <button style={{color: " blueviolet"}}>Positions Filled up</button>
     } else if(jobData.applicationsCurrent >= jobData.applicationsMax){
-      formContent = <button>Applications Filled up</button>
+      formContent = <button style={{color: "deepskyblue"}}>Applications Filled up</button>
     } else if(!isLoadingApplications && userApplications) {
-      if(userApplications[0].length >= 10){
-        formContent = <button>already applied to 10 jobs</button>
-      } else if(userApplications[0].length && isPresent(userApplications[0], jobData._id)){
-        formContent = <button>already applied</button>
+      if(userApplications[0].length && isPresent(userApplications[0], jobData._id)){
+        formContent = <button style={{color: "wheat"}}>already applied</button>
+      } else if (userApplications[0].length >= 10){
+        formContent = <button style={{color: "tomato"}} onclick={()=>alert('already applied to 10 jobs!')}>already applied to 10 jobs</button>
       } else if(userApplications[1].length && isPresent(userApplications[1], jobData._id)){
-        formContent = <button>you are shortlisted currently</button>
+        formContent = <button style={{color: " khaki"}}>you are currently shortlisted</button>
       } else if(userApplications[2].length && isPresent(userApplications[2], jobData._id)){
-        formContent = <button>you are already accepted!</button>
+        formContent = <button style={{color: "green"}}>you are already accepted!</button>
       } else if(userApplications[3].length && isPresent(userApplications[3], jobData._id)){
-        formContent = <button>you are REJECTED.</button>
+        formContent = <button style={{color: "red"}}>you are REJECTED.</button>
       } else if (!isSubmitted){
         formContent = (
           <form onSubmit={handleSubmit(onSubmit)}>
