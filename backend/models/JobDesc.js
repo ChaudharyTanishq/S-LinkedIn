@@ -19,7 +19,8 @@ const jobSchema = mongoose.Schema({
     appliedApplications: [],
     shortListedApplications: [],
     acceptedApplications: [],
-    rejectedApplications: []
+    rejectedApplications: [],
+    rating: []
 })
 
 module.exports = mongoose.model('JobDesc', jobSchema)

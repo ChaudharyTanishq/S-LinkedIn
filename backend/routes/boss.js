@@ -13,5 +13,6 @@ router.get('/myJobs/:jobId', boss.showJob)
 router.post('/myJobs/:jobId', boss.updateApplicationsJob)
 router.delete('/myJobs/:jobId', boss.deleteJob)
 router.patch('/myJobs/:jobId', boss.updateJob)
+router.post('/rating', boss.postRating)
 
 module.exports = router

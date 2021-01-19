@@ -11,5 +11,5 @@ router.post('/profile/education', user.updateEducation)
 router.get('/applications', user.getApplications)
 router.get('/dashboard/:jobId', user.showJob)
 router.post('/dashboard/:jobId', user.applyJob)
-
+router.post('/rating', user.postRating)
 module.exports = router
